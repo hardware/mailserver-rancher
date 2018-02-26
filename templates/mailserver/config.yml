@@ -1,0 +1,7 @@
+name: hardware/mailserver
+description: Simple and full-featured mail server using Docker
+version: # The default version of the package to use (must match any folder in the rancher-compose version)
+category: Email
+maintainer: "Hardware <contact@meshup.net>"
+license: MIT
+projectURL: https://github.com/hardware/mailserver-rancher
