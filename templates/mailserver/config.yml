@@ -1,6 +1,6 @@
-name: hardware/mailserver
-description: Simple and full-featured mail server using Docker
+name: mailserver
+description: "Simple and full-featured mail server using Docker"
 version: 1.1.0
 maintainer: "Hardware <contact@meshup.net>"
-license: MIT
-projectURL: https://github.com/hardware/mailserver-rancher
+license: MIT License
+projectURL: "https://github.com/hardware/mailserver-rancher"
