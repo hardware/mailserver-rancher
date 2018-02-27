@@ -1,18 +1,6 @@
 version: '2'
-volumes:
-  rainloop:
-    external: true
-    driver: ${STORAGE_DRIVER}
-  mailserver:
-    external: true
-    driver: ${STORAGE_DRIVER}
-  redis:
-    external: true
-    driver: ${STORAGE_DRIVER}
-  mariadb:
-    external: true
-    driver: ${STORAGE_DRIVER}
 services:
+
   mariadb:
     image: mariadb:10.2
     environment:
@@ -22,15 +10,16 @@ services:
       MYSQL_USER: ${DBUSER}
     stdin_open: true
     volumes:
-    - "${ROOT}/mysql/db:/var/lib/mysql"
+      - "${ROOT}/mysql/db:/var/lib/mysql"
     tty: true
     labels:
       io.rancher.container.pull_image: always
+
   rainloop:
     image: hardware/rainloop
     stdin_open: true
     volumes:
-    - "${ROOT}/rainloop:/rainloop/data"
+      - "${ROOT}/rainloop:/rainloop/data"
     tty: true
     links:
     - mariadb:mariadb
@@ -42,6 +31,7 @@ services:
       io.rancher.container.pull_image: always
     volumes:
       - ${VOLUMES_ROOT_PATH}/rainloop:/rainloop/data
+
   postfixadmin:
     image: hardware/postfixadmin
     environment:
@@ -56,6 +46,7 @@ services:
       traefik.frontend.rule: "Host:postfixadmin.${MAILSERVER_DOMAIN}"
       traefik.enable: 'true'
       io.rancher.container.pull_image: always
+
   mailserver:
     image: hardware/mailserver:1.1-stable
     environment:
@@ -74,7 +65,7 @@ services:
       ENABLE_POP3: ${ENABLE_POP3}
       FETCHMAIL_INTERVAL: ${FETCHMAIL_INTERVAL}
     volumes:
-     - "${ROOT}/mail:/var/mail"
+      - "${ROOT}/mail:/var/mail"
     tty: true
     links:
     - mariadb:mariadb
@@ -92,10 +83,11 @@ services:
       traefik.frontend.rule: "Host:spam.${MAILSERVER_DOMAIN}"
       traefik.enable: 'true'
       io.rancher.container.pull_image: always
+
   redis:
     image: redis:4.0-alpine
     volumes:
-    - "${ROOT}/redis:/data"
+      - "${ROOT}/redis:/data"
     tty: true
     command:
     - redis-server
@@ -103,3 +95,17 @@ services:
     - 'yes'
     labels:
       io.rancher.container.pull_image: always
+
+volumes:
+  rainloop:
+    external: true
+    driver: ${STORAGE_DRIVER}
+  mailserver:
+    external: true
+    driver: ${STORAGE_DRIVER}
+  redis:
+    external: true
+    driver: ${STORAGE_DRIVER}
+  mariadb:
+    external: true
+    driver: ${STORAGE_DRIVER}
