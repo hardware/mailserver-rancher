@@ -1,0 +1,105 @@
+version: '2'
+volumes:
+  rainloop:
+    external: true
+    driver: ${STORAGE_DRIVER}
+  mailserver:
+    external: true
+    driver: ${STORAGE_DRIVER}
+  redis:
+    external: true
+    driver: ${STORAGE_DRIVER}
+  mariadb:
+    external: true
+    driver: ${STORAGE_DRIVER}
+services:
+  mariadb:
+    image: mariadb:10.2
+    environment:
+      MYSQL_DATABASE: ${DBNAME}
+      MYSQL_PASSWORD: ${DBPASS}
+      MYSQL_ROOT_PASSWORD: ${DBROOT}
+      MYSQL_USER: ${DBUSER}
+    stdin_open: true
+    volumes:
+    - "${ROOT}/mysql/db:/var/lib/mysql"
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+  rainloop:
+    image: hardware/rainloop
+    stdin_open: true
+    volumes:
+    - "${ROOT}/rainloop:/rainloop/data"
+    tty: true
+    links:
+    - mariadb:mariadb
+    - mailserver:mailserver
+    labels:
+      traefik.backend.port: '8889'
+      traefik.frontend.rule: "Host:webmail.${MAILSERVER_DOMAIN}"
+      traefik.enable: 'true'
+      io.rancher.container.pull_image: always
+    volumes:
+      - ${VOLUMES_ROOT_PATH}/rainloop:/rainloop/data
+  postfixadmin:
+    image: hardware/postfixadmin
+    environment:
+      DBPASS: ${DBPASS}
+    stdin_open: true
+    tty: true
+    links:
+    - mariadb:mariadb
+    - mailserver:mailserver
+    labels:
+      traefik.backend.port: '8888'
+      traefik.frontend.rule: "Host:postfixadmin.${MAILSERVER_DOMAIN}"
+      traefik.enable: 'true'
+      io.rancher.container.pull_image: always
+  mailserver:
+    image: hardware/mailserver:1.1-stable
+    environment:
+      DBPASS: ${DBPASS}
+      RSPAMD_PASSWORD: ${RSPAMD_PASSWORD}
+      FQDN: ${MAILSERVER_HOSTNAME}
+      DOMAIN: ${MAILSERVER_DOMAIN}
+      ADD_DOMAINS: ${MAILSERVER_ADD_DOMAIN}
+      DISABLE_CLAMAV: ${CLAMAV}
+      DISABLE_DNS_RESOLVER: ${DNS_RESOLVER}
+      DISABLE_GREYLISTING: ${GREYLISTING}
+      DISABLE_RATELIMITING: ${RATELIMITING}
+      DISABLE_SIGNING: ${SIGNING}
+      ENABLE_ENCRYPTION: ${SET_ENCRYPTION}
+      ENABLE_FETCHMAIL: ${FETCHMAIL}
+      ENABLE_POP3: ${ENABLE_POP3}
+      FETCHMAIL_INTERVAL: ${FETCHMAIL_INTERVAL}
+    volumes:
+     - "${ROOT}/mail:/var/mail"
+    tty: true
+    links:
+    - mariadb:mariadb
+    ports:
+    - "${BIND_ADDRESS}:25:25/tcp"
+    - "${BIND_ADDRESS}:110:110/tcp"
+    - "${BIND_ADDRESS}:143:143/tcp"
+    - "${BIND_ADDRESS}:465:465/tcp"
+    - "${BIND_ADDRESS}:587:587/tcp"
+    - "${BIND_ADDRESS}:993:993/tcp"
+    - "${BIND_ADDRESS}:995:995/tcp"
+    - "${BIND_ADDRESS}:4190:4190/tcp"
+    labels:
+      traefik.backend.port: '11334'
+      traefik.frontend.rule: "Host:spam.${MAILSERVER_DOMAIN}"
+      traefik.enable: 'true'
+      io.rancher.container.pull_image: always
+  redis:
+    image: redis:4.0-alpine
+    volumes:
+    - "${ROOT}/redis:/data"
+    tty: true
+    command:
+    - redis-server
+    - --appendonly
+    - 'yes'
+    labels:
+      io.rancher.container.pull_image: always

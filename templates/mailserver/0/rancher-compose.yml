@@ -1,0 +1,134 @@
+.catalog:
+  name: hardware/mailserver
+  version: 1.3.1
+  description: Simple and full-featured mail server using Docker
+  questions:
+    - variable: ROOT
+      label: "Root Path"
+      description: "Set this to the path where mailserver data and configuration is stored"
+      default: "/mailserver"
+      required: true
+      type: string
+    - variable: BIND_ADDRESS
+      label: "Mailserver bind address"
+      description: "Address where listening ports should bind"
+      default: "127.0.0.1"
+      required: true
+      type: string
+     - variable: MAILSERVER_HOSTNAME
+      label: Hostname
+      type: "string"
+      required: true
+      description: "Use a FQDN (E.g. mail.example.com) as hostname"
+    - variable: MAILSERVER_DOMAIN
+      label: Domain
+      type: "string"
+      required: true
+      description: "E.g. example.com as Domain"
+    - variable: MAILSERVER_ADD_DOMAIN
+      label: Add additional domains
+      type: "string"
+      required: true
+      description: "Add additional domains separated by commas (needed for dkim keys, E.g. example.fr as add Domain, etc)."
+    - variable: STORAGE_DRIVER
+      label: Storage Driver
+      description: "Set driver, if needed. Eg. 'rancher-nfs'"
+      type: "string"
+    - variable: DBROOT
+      label: DB Root Password
+      required: true
+      type: "password"
+      default: "mailserver"
+    - variable: DBNAME
+      label: Database Name
+      required: true
+      type: "string"
+      default: "mailserver"
+    - variable: DBUSER
+      label: Database User Name
+      required: true
+      type: "string"
+      default: "mailserver"
+    - variable: DBPASS
+      label: Database User Password
+      required: true
+      type: "password"
+      default: "mailserver"
+    - variable: RSPAMD_PASSWORD
+      label: RSPAMD Password
+      required: true
+      type: "password"
+      default: "RSPAMD#mailserver"
+    - variable: CLAMAV
+      label: DISABLE CLAMAV?
+      required: true
+      default: "true"
+      type: enum
+      options: 
+          - "True"
+          - "False"
+    - variable: DNS_RESOLVER
+      label: DISABLE DNS RESOLVER?
+      default: "false"
+      type: enum
+      options: 
+          - "True"
+          - "False"
+    - variable: GREYLISTING
+      label: DISABLE GREYLISTING?
+      default: "True"
+      type: enum
+      options: 
+          - "True"
+          - "False"
+    - variable: RATELIMITING
+      label: DISABLE RATELIMITING?
+      default: "True"
+      type: enum
+      options: 
+          - "True"
+          - "False"
+    - variable: SIGNING
+      label: DISABLE SIGNING?
+      default: "True"
+      type: enum
+      options: 
+          - "True"
+          - "False"
+    - variable: SET_ENCRYPTION
+      label: ENABLE ENCRYPTION?
+      description: "default = false. You can use Traefik Encryption by default"
+      default: "false"
+      type: enum
+      options: 
+          - "True"
+          - "False"
+    - variable: FETCHMAIL
+      label: ENABLE FETCHMAIL?
+      default: "true"
+      type: enum
+      options: 
+          - "True"
+          - "False"
+    - variable: ENABLE_POP3
+      label: ENABLE POP3?
+      default: "true"
+      type: enum
+      options: 
+          - "True"
+          - "False"
+    - variable: FETCHMAIL_INTERVAL
+      label: FETCHMAIL INTERVAL
+      required: false
+      type: "int"
+      default: 10
+mariadb:
+  scale: 1
+rainloop:
+  scale: 1
+postfixadmin:
+  scale: 1
+mailserver:
+  scale: 1
+redis:
+  scale: 1
