@@ -32,8 +32,14 @@
     - variable: MAILSERVER_ADD_DOMAIN
       label: Add additional domains
       type: "string"
-      required: true
+      required: false
       description: "Add additional domains separated by commas (needed for dkim keys, E.g. example.fr as add Domain, etc)."
+
+    - variable: RELAY_NETWORKS
+      label: Add additional relays networks
+      type: "string"
+      required: false
+      description: "Additional IPs or networks the mailserver relays without authentication."
 
     - variable: STORAGE_DRIVER
       label: Storage Driver
@@ -56,24 +62,30 @@
       label: Database User Name
       required: true
       type: "string"
-      default: "mailserver"
+      default: "postfix"
 
     - variable: DBPASS
-      label: Database User Password
+      label: MariaDB Database Password (required)
       required: true
       type: "password"
-      default: "mailserver"
+      default: "$mailserver"
 
     - variable: RSPAMD_PASSWORD
       label: RSPAMD Password
       required: true
       type: "password"
       default: "RSPAMD#mailserver"
+      description: Rspamd WebUI password (required)
+
+    - variable: DISABLE_RSPAMD_MODULE
+      label: List of disabled modules separated by commas
+      required: true
+      type: "string"
+      description: "List of disabled modules separated by commas"
 
     - variable: CLAMAV
       label: DISABLE CLAMAV?
-      required: true
-      default: "true"
+      default: "false"
       type: enum
       options: 
           - "True"
@@ -89,7 +101,7 @@
 
     - variable: GREYLISTING
       label: DISABLE GREYLISTING?
-      default: "True"
+      default: "false"
       type: enum
       options: 
           - "True"
@@ -97,7 +109,7 @@
 
     - variable: RATELIMITING
       label: DISABLE RATELIMITING?
-      default: "True"
+      default: "false"
       type: enum
       options: 
           - "True"
@@ -105,7 +117,7 @@
 
     - variable: SIGNING
       label: DISABLE SIGNING?
-      default: "True"
+      default: "false"
       type: enum
       options: 
           - "True"
@@ -122,7 +134,7 @@
 
     - variable: FETCHMAIL
       label: ENABLE FETCHMAIL?
-      default: "true"
+      default: "false"
       type: enum
       options: 
           - "True"

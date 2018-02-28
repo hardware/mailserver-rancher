@@ -25,7 +25,7 @@ services:
     - mariadb:mariadb
     - mailserver:mailserver
     labels:
-      traefik.backend.port: '8889'
+      traefik.port: '8889'
       traefik.frontend.rule: "Host:webmail.${MAILSERVER_DOMAIN}"
       traefik.enable: 'true'
       io.rancher.container.pull_image: always
@@ -37,12 +37,13 @@ services:
     environment:
       DBPASS: ${DBPASS}
     stdin_open: true
+    domainname: ${MAILSERVER_DOMAIN}
     tty: true
     links:
     - mariadb:mariadb
     - mailserver:mailserver
     labels:
-      traefik.backend.port: '8888'
+      traefik.port: '8888'
       traefik.frontend.rule: "Host:postfixadmin.${MAILSERVER_DOMAIN}"
       traefik.enable: 'true'
       io.rancher.container.pull_image: always
@@ -51,7 +52,11 @@ services:
     image: hardware/mailserver:1.1-stable
     environment:
       DBPASS: ${DBPASS}
+      DBUSER: ${DBUSER}
+      DBNAME: ${DBNAME}
       RSPAMD_PASSWORD: ${RSPAMD_PASSWORD}
+      RELAY_NETWORKS: ${RELAY_NETWORKS}
+      DISABLE_RSPAMD_MODULE: ${DISABLE_RSPAMD_MODULE}
       FQDN: ${MAILSERVER_HOSTNAME}
       DOMAIN: ${MAILSERVER_DOMAIN}
       ADD_DOMAINS: ${MAILSERVER_ADD_DOMAIN}
@@ -67,6 +72,7 @@ services:
     volumes:
       - "${ROOT}/mail:/var/mail"
     tty: true
+    domainname: ${MAILSERVER_DOMAIN}
     links:
     - mariadb:mariadb
     ports:
@@ -79,7 +85,7 @@ services:
     - "${BIND_ADDRESS}:995:995/tcp"
     - "${BIND_ADDRESS}:4190:4190/tcp"
     labels:
-      traefik.backend.port: '11334'
+      traefik.port: '11334'
       traefik.frontend.rule: "Host:spam.${MAILSERVER_DOMAIN}"
       traefik.enable: 'true'
       io.rancher.container.pull_image: always
