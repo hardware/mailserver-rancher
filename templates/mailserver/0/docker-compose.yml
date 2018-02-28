@@ -25,7 +25,7 @@ services:
     - mariadb:mariadb
     - mailserver:mailserver
     labels:
-      traefik.port: '8889'
+      traefik.port: '8888'
       traefik.frontend.rule: "Host:webmail.${MAILSERVER_DOMAIN}"
       traefik.enable: 'true'
       io.rancher.container.pull_image: always
@@ -54,6 +54,7 @@ services:
   mailserver:
     image: hardware/mailserver:1.1-stable
     environment:
+      DBHOST: mariadb
       DBPASS: ${DBPASS}
       DBUSER: ${DBUSER}
       DBNAME: ${DBNAME}
