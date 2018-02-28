@@ -79,13 +79,13 @@
 
     - variable: DISABLE_RSPAMD_MODULE
       label: List of disabled modules separated by commas
-      required: true
+      required: false
       type: "string"
       description: "List of disabled modules separated by commas"
 
     - variable: CLAMAV
       label: DISABLE CLAMAV?
-      default: "false"
+      default: false
       type: enum
       options: 
           - "True"
@@ -93,7 +93,7 @@
 
     - variable: DNS_RESOLVER
       label: DISABLE DNS RESOLVER?
-      default: "false"
+      default: false
       type: enum
       options: 
           - "True"
@@ -101,7 +101,7 @@
 
     - variable: GREYLISTING
       label: DISABLE GREYLISTING?
-      default: "false"
+      default: false
       type: enum
       options: 
           - "True"
@@ -109,7 +109,7 @@
 
     - variable: RATELIMITING
       label: DISABLE RATELIMITING?
-      default: "false"
+      default: false
       type: enum
       options: 
           - "True"
@@ -117,7 +117,7 @@
 
     - variable: SIGNING
       label: DISABLE SIGNING?
-      default: "false"
+      default: false
       type: enum
       options: 
           - "True"
@@ -126,7 +126,7 @@
     - variable: SET_ENCRYPTION
       label: ENABLE ENCRYPTION?
       description: "default = false. You can use Traefik Encryption by default"
-      default: "false"
+      default: false
       type: enum
       options: 
           - "True"
@@ -134,7 +134,7 @@
 
     - variable: FETCHMAIL
       label: ENABLE FETCHMAIL?
-      default: "false"
+      default: false
       type: enum
       options: 
           - "True"
@@ -142,7 +142,7 @@
 
     - variable: ENABLE_POP3
       label: ENABLE POP3?
-      default: "true"
+      default: true
       type: enum
       options: 
           - "True"
