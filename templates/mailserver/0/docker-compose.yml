@@ -34,8 +34,11 @@ services:
 
   postfixadmin:
     image: hardware/postfixadmin
+    hostname: postfixadmin
     environment:
       DBPASS: ${DBPASS}
+      DBUSER: ${DBUSER}
+      DBNAME: ${DBNAME}
     stdin_open: true
     domainname: ${MAILSERVER_DOMAIN}
     tty: true
@@ -73,6 +76,7 @@ services:
       - "${ROOT}/mail:/var/mail"
     tty: true
     domainname: ${MAILSERVER_DOMAIN}
+    hostname: spam
     links:
     - mariadb:mariadb
     ports:
