@@ -1,166 +1,205 @@
-.catalog:
+version: '2'
+catalog:
   name: hardware/mailserver
-  version: 1.1.0
-  description: Simple and full-featured mail server using Docker
+  version: v1.1-stable-1
+  description: |
+    Simple and full-featured mail server using Docker
   questions:
-    - variable: ROOT
-      label: "Root Path"
-      description: "Set this to the path where mailserver data and configuration is stored"
-      default: "/mailserver"
+
+    - variable: VOLUMES_ROOT_PATH
+      label: Docker volumes root path (required)
+      description: |
+        "Set this to the path where the mailserver data and configuration are stored"
+      type: string
       required: true
-      type: "string"
+      default: "/mnt/docker/mailserver"
 
     - variable: BIND_ADDRESS
-      label: "Mailserver bind address"
-      description: "Address where listening ports should bind"
+      label: Mailserver bind address (required)
+      description: |
+        "Address where listening ports should bind"
+      type: string
+      required: true
       default: "0.0.0.0"
-      required: true
-      type: "string"
-
-    - variable: MAILSERVER_HOSTNAME
-      label: Hostname
-      type: "string"
-      required: true
-      description: "Use a FQDN (E.g. mail.example.com) as hostname"
-
-    - variable: MAILSERVER_DOMAIN
-      label: Domain
-      type: "string"
-      required: true
-      description: "E.g. example.com as Domain"
-
-    - variable: MAILSERVER_ADD_DOMAIN
-      label: Add additional domains
-      type: "string"
-      required: false
-      description: "Add additional domains separated by commas (needed for dkim keys, E.g. example.fr as add Domain, etc)."
-
-    - variable: RELAY_NETWORKS
-      label: Add additional relays networks
-      type: "string"
-      required: false
-      description: "Additional IPs or networks the mailserver relays without authentication."
 
     - variable: STORAGE_DRIVER
       label: Storage Driver
-      description: "Set driver, if needed. Eg. 'rancher-nfs'"
-      type: "string"
+      description: |
+        "Set the storage driver if needed, e.g. rancher-nfs"
+      type: string
 
-    - variable: DBROOT
-      label: DB Root Password
+    - variable: MAILSERVER_FQDN
+      label: Mailserver FQDN (required)
+      description: |
+        "Your fully qualified domain name, e.g. mail.domain.tld"
+      type: string
       required: true
-      type: "password"
-      default: "mailserver"
+
+    - variable: MAILSERVER_DOMAIN
+      label: Mailserver domain name (required)
+      description: |
+        "Your domain name, e.g. domain.tld"
+      type: string
+      required: true
+
+    - variable: MAILSERVER_HOSTNAME
+      label: Mailserver hostname (required)
+      description: |
+        "E.g. if your fqdn is 'mail.domain.tld', your hostname is equal to 'mail'"
+      type: string
+      required: true
 
     - variable: DBNAME
-      label: Database Name
+      label: Database name (required)
+      type: string
       required: true
-      type: "string"
-      default: "mailserver"
+      default: "postfix"
 
     - variable: DBUSER
-      label: Database User Name
+      label: Database username (required)
+      type: string
       required: true
-      type: "string"
       default: "postfix"
 
     - variable: DBPASS
-      label: MariaDB Database Password (required)
+      label: Database password (required)
+      type: password
       required: true
-      type: "password"
-      default: "$mailserver"
+
+    - variable: DBROOT
+      label: MariaDB root password (required)
+      type: password
+      required: true
+
+    - variable: VMAIL_SUBDIR
+      label: Individual mailbox subdirectory name
+      description: |
+        "This is the mail location subdirectory name, e.g. /var/mail/vhosts/domain.tld/john.doe/$SUBDIR"
+      type: string
+      default: "mail"
+
+    - variable: PASSWORD_SCHEME
+      label: Passwords encryption scheme
+      description: |
+        "For compatible schemes, read this : https://wiki.dovecot.org/Authentication/PasswordSchemes"
+      type: enum
+      options:
+        - "SHA512-CRYPT"
+        - "SHA256-CRYPT"
+        - "MD5-CRYPT"
+      default: "SHA512-CRYPT"
+
+    - variable: OPENDKIM_KEY_LENGTH
+      label: Size of your DKIM RSA key pair in bits
+      description: |
+        "Check your domain registrar support to verify that it supports
+        a TXT record long enough for a key larger than 1024 bits."
+      type: enum
+      options:
+        - 1024
+        - 2048
+        - 4096
+      default: 1024
+
+    - variable: MAILSERVER_ADD_DOMAIN
+      label: Add additional domain names
+      description: |
+        "Add additional domain names to the mailserver separated by commas (needed for dkim keys etc.)"
+      type: string
+
+    - variable: RELAY_NETWORKS
+      label: Add additional relay networks
+      description: |
+        "Additional IPs or networks the mailserver relays without
+        authentication, e.g. 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8"
+      type: string
 
     - variable: RSPAMD_PASSWORD
-      label: RSPAMD Password
+      label: Rspamd Password (required)
+      description: |
+        "Rspamd WebUI and controller password"
+      type: password
       required: true
-      type: "password"
-      default: "RSPAMD#mailserver"
-      description: Rspamd WebUI password (required)
 
     - variable: DISABLE_RSPAMD_MODULE
-      label: List of disabled modules separated by commas
-      required: false
-      type: "string"
-      description: "List of disabled modules separated by commas"
+      label: List of disabled rspamd modules separated by commas
+      description: |
+        "You can disable any modules listed here : https://rspamd.com/doc/modules/"
+      type: string
 
-    - variable: CLAMAV
-      label: DISABLE CLAMAV?
+    - variable: DISABLE_CLAMAV
+      label: Do you want to disable ClamAV ?
+      description: |
+        "More information here : https://www.clamav.net/"
+      type: boolean
       default: false
-      type: enum
-      options: 
-          - "True"
-          - "False"
 
-    - variable: DNS_RESOLVER
-      label: DISABLE DNS RESOLVER?
+    - variable: DISABLE_SIEVE
+      label: Do you want to disable ManageSieve protocol ?
+      description: |
+        "More information here : https://wiki2.dovecot.org/Pigeonhole/ManageSieve"
+      type: boolean
       default: false
-      type: enum
-      options: 
-          - "True"
-          - "False"
 
-    - variable: GREYLISTING
-      label: DISABLE GREYLISTING?
+    - variable: DISABLE_DNS_RESOLVER
+      label: Do you want to disable the local DNS resolver ?
+      description: |
+        "Disable if you have some DNS troubles and DNSSEC lookup issues with the local DNS"
+      type: boolean
       default: false
-      type: enum
-      options: 
-          - "True"
-          - "False"
 
-    - variable: RATELIMITING
-      label: DISABLE RATELIMITING?
+    - variable: DISABLE_GREYLISTING
+      label: Do you want to disable the greylisting policy ?
+      type: boolean
       default: false
-      type: enum
-      options: 
-          - "True"
-          - "False"
 
-    - variable: SIGNING
-      label: DISABLE SIGNING?
+    - variable: DISABLE_RATELIMITING
+      label: Do you want to disable the ratelimiting policy ?
+      type: boolean
       default: false
-      type: enum
-      options: 
-          - "True"
-          - "False"
 
-    - variable: SET_ENCRYPTION
-      label: ENABLE ENCRYPTION?
-      description: "default = false. You can use Traefik Encryption by default"
+    - variable: DISABLE_SIGNING
+      label: Do you want to disable DKIM/ARC signing ?
+      type: boolean
       default: false
-      type: enum
-      options: 
-          - "True"
-          - "False"
-
-    - variable: FETCHMAIL
-      label: ENABLE FETCHMAIL?
-      default: false
-      type: enum
-      options: 
-          - "True"
-          - "False"
 
     - variable: ENABLE_POP3
-      label: ENABLE POP3?
-      default: true
-      type: enum
-      options: 
-          - "True"
-          - "False"
+      label: Do you want to enable POP3 protocol ?
+      type: boolean
+      default: false
+
+    - variable: ENABLE_ENCRYPTION
+      label: Do you want to enable automatic GPG encryption ?
+      description: |
+        "Please enable this option carefully and only if you know what you are doing."
+      type: boolean
+      default: false
+
+    - variable: ENABLE_FETCHMAIL
+      label: Do you want to enable fetchmail forwarding ?
+      type: boolean
+      default: false
 
     - variable: FETCHMAIL_INTERVAL
-      label: FETCHMAIL INTERVAL
-      required: false
-      type: "int"
+      label: Fetchmail polling interval
+      type: int
       default: 10
 
-mariadb:
-  scale: 1
-rainloop:
-  scale: 1
-postfixadmin:
-  scale: 1
-mailserver:
-  scale: 1
-redis:
-  scale: 1
+    - variable: RECIPIENT_DELIMITER
+      label: Subaddress extension separator
+      description: |
+        "Single character only, e.g. john.doe+subname@domain.tld use '+' separator symbol"
+      type: string
+      default: "+"
+
+services:
+  mailserver:
+    scale: 1
+  postfixadmin:
+    scale: 1
+  mariadb:
+    scale: 1
+  rainloop:
+    scale: 1
+  redis:
+    scale: 1
