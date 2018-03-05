@@ -107,6 +107,13 @@ catalog:
         "Add additional domain names to the mailserver separated by commas (needed for dkim keys etc.)"
       type: string
 
+    - variable: MAILSERVER_CUSTOM_SSL
+      label: Do you want to enable mailserver custom SSL certificate ?
+      description: |
+        "If yes, your mailserver SSL certificate must be stored in ${VOLUMES_ROOT_PATH}/ssl directory"
+      type: boolean
+      default: false
+
     - variable: RELAY_NETWORKS
       label: Add additional relay networks
       description: |

@@ -47,6 +47,9 @@ services:
       FETCHMAIL_INTERVAL: ${FETCHMAIL_INTERVAL}
     volumes:
       - "${VOLUMES_ROOT_PATH}/mail:/var/mail"
+    {{- if eq .Values.MAILSERVER_CUSTOM_SSL "true"}}
+      - "${VOLUMES_ROOT_PATH}/ssl:/etc/letsencrypt"
+    {{- end}}
     links:
       - mariadb:mariadb
       - redis:redis
