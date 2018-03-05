@@ -38,9 +38,17 @@ And you **MUST** read this :
 
 8. Done, congratulation !
 
+### Custom mailserver SSL certificate
+
+1. Request your SSL certificate in `${VOLUMES_ROOT_PATH}/ssl/live/mail.domain.tld` with an ACME client if you use Let's Encrypt, otherwise get your SSL certificate with the method provided by your certification authority.
+2. Enable the custom SSL certificate support in rancher mailserver catalog.
+
+For more information, read this : [custom certificates](https://github.com/hardware/mailserver/blob/master/README.md#custom-certificates)
+
+If you do not use your own trusted SSL certificate, a default self-signed one (RSA 4096 bits SHA2) is added here : `${VOLUMES_ROOT_PATH}/mail/ssl/selfsigned/{cert.pem, privkey.pem}`.
+
 ### List of all webservices available after installation :
 
-* Traefik dashboard : https://mail.domain.tld/
 * Rspamd dashboard : https://spam.domain.tld/
 * Administration : https://postfixadmin.domain.tld/
 * Webmail : https://webmail.domain.tld/
